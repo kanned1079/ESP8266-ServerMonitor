@@ -6,4 +6,4 @@ cpu_sum=$(echo "$cpu_us+$cpu_sy"|bc)
 mem_sum=$((mem_sys_used/1024))
 result=$cpu_sum 
 result2=$mem_sum
-mosquitto_pub -t "ss" -m "$result $result2" -h "这里写你的mqtt服务器地址"
+mosquitto_pub -t "ss" -m "$result   $result2" -h "这里写你的mqtt服务器地址"
