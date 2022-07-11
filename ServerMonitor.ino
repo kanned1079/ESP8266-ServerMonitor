@@ -1,6 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <Wire.h>
-#include <Adafruit_GFX.h>
+//#include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <PubSubClient.h>
 #include <iostream>
@@ -18,8 +18,9 @@ Adafruit_SSD1306 oled(128, 64, &Wire,-1);
 void setup() {
   // put your setup code here, to run once:
   delay(200);
-  pinMode(D3,OUTPUT);    //继电器引脚
-  digitalWrite(D3,LOW);    //启动后关闭继电器
+  pinMode(D3,OUTPUT);
+  delay(500);
+  digitalWrite(D3,LOW);
   pinMode(LED_BUILTIN, OUTPUT);     // 设置板上LED引脚为输出模式
   digitalWrite(LED_BUILTIN, HIGH);  // 启动后关闭LED
   Serial.begin(9600);   //开启串口通讯
@@ -30,18 +31,19 @@ void setup() {
   mqttClient.setCallback(receiveCallback);  // 设置MQTT订阅回调函数
   connectMQTTserver();  // 连接MQTT服务器
   
+  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   delay(500);
-  digitalWrite(D3,LOW);
-  digitalWrite(LED_BUILTIN,HIGH);
+  //digitalWrite(D3,LOW);
   if (mqttClient.connected()) { // 如果开发板成功连接服务器
     mqttClient.loop();          // 处理信息以及心跳
   } else {                      // 如果开发板未能成功连接服务器
     connectMQTTserver();        // 则尝试连接服务器
   }
+
 }
 
 void connectMQTTserver(){
@@ -74,6 +76,8 @@ void receiveCallback(char* topic, byte* payload, unsigned int length) {
   int i;
   for (i = 0; i < length; i++) {
     Serial.print((char)payload[i]);
+    //std::String s(length, payload[i]);
+    //std::cout<<s<<std::endl;  
     
     s += (char)payload[i]; 
     
@@ -85,13 +89,17 @@ void receiveCallback(char* topic, byte* payload, unsigned int length) {
   Serial.println("   Cpu: ");
   Serial.println(cpu_useage_int);
 
-  if(cpu_useage_int >= 90){     //CPU使用率大于90
-    digitalWrite(D3, HIGH);     //开启继电器
-    digitalWrite(BUILTIN_LED, LOW);  //开启LED
-    //delay(200);
-    //digitalWrite(D3, LOW);
+  if(cpu_useage_int >= 90){
+    digitalWrite(D3, HIGH);
+    digitalWrite(LED_BUILTIN, LOW);
+    Serial.println("LED ON");
+    delay(500);
+    digitalWrite(D3, LOW);
+    digitalWrite(LED_BUILTIN, HIGH);
     }
-  
+
+  int countCPUTime = countHighUseage();
+  Serial.println(countCPUTime);
     
   Serial.println("\n"+cpu_useage_int);
   Serial.println("");
@@ -109,10 +117,10 @@ void receiveCallback(char* topic, byte* payload, unsigned int length) {
 
   oled.setTextSize(2);//设置字体大小  
   //oled.setFont(ArialMT_Plain_24);  //设置显示字体
-  oled.setCursor(5, 33);//设置显示位置
+  oled.setCursor(5, 38);//设置显示位置
   oled.println(s);
   
-  oled.display(); // 开显示
+  oled.display(); //开启显示
   delay(200);
  
 }
@@ -146,3 +154,9 @@ void connectWifi(){
   }
   Serial.println("WiFi Connected!");  
 }
+
+int countHighUseage(){
+  int time;
+  time ++;
+  return time;
+  }
