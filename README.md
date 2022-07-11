@@ -4,7 +4,7 @@ A small linux server monitor on ESP8266
 本项目使用一块ESP8266开发板和SSD1306-OLED显示屏
 
 macOS ch340驱动 CH34xVCPDriver.pkg
-
+第三方库 ssd1306syp.zip 需要下载安装
 
 OLED
 SCL -> D1
